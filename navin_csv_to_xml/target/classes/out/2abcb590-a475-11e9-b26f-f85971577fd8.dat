@@ -1,0 +1,22 @@
+{
+  "Employees": [
+    {
+      "ID": "1",
+      "Name": "Navin",
+      "Designation": "Associateconsultant",
+      "Address": "Bangalore,India,560103"
+    },
+    {
+      "ID": "2",
+      "Name": "Neelam",
+      "Designation": "Seniorconsulatant",
+      "Address": "Newyork,USA,345678"
+    },
+    {
+      "ID": "3",
+      "Name": "Anusha",
+      "Designation": "Seniorconsultant",
+      "Address": "Paris,France,678543"
+    }
+  ]
+}
