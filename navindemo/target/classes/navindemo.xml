@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:metadata="http://www.mulesoft.org/schema/mule/metadata" xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw" xmlns:ws="http://www.mulesoft.org/schema/mule/ws" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ws http://www.mulesoft.org/schema/mule/ws/current/mule-ws.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee/dw/current/dw.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+    <http:listener-config name="HTTP_Listener_Configuration" host="0.0.0.0" port="8088" doc:name="HTTP Listener Configuration"/>
+    <http:request-config name="HTTP_Request_Configuration" host="All Interfaces [0.0.0.0] (Default)" port="8083" doc:name="HTTP Request Configuration" protocol="HTTPS"/>
+    <ws:consumer-config name="navin_Web_Service_Consumer" wsdlLocation="https://exchange2-asset-manager-kprod.s3.amazonaws.com/68ef9520-24e9-4cf2-b2f5-620025690913/c2f011e2e51a0e09ab7e636b4f932972fa6597eb2f0d182805b18c34d67a31b4.wsdl?X-Amz-Algorithm=AWS4-HMAC-SHA256&amp;X-Amz-Credential=AKIAJTBQMSKYL2HXJA4A%2F20190717%2Fus-east-1%2Fs3%2Faws4_request&amp;X-Amz-Date=20190717T135855Z&amp;X-Amz-Expires=86400&amp;X-Amz-Signature=f01821d5c2f23f82cc9c72eba15fedd5fe660147003f404f4ec1a293c88b3151&amp;X-Amz-SignedHeaders=host&amp;response-content-disposition=attachment%3B%20filename%3Dglobal-weather-wsdl-1.0.0-wsdl.wsdl" service="GlobalWeather" port="GlobalWeatherSoap12" serviceAddress="http://www.webservicex.com/globalweather.asmx" doc:name="Web Service Consumer"/>
+    <flow name="navin_webserviceconsumer">
+        <http:listener config-ref="HTTP_Listener_Configuration" path="/webservice" allowedMethods="GET" doc:name="HTTP"/>
+        <dw:transform-message doc:name="Transform Message">
+            <dw:set-payload><![CDATA[%dw 1.0
+%output application/xml
+%namespace ns0 http://www.webserviceX.NET
+---
+{
+	ns0#GetWeather: {
+		ns0#CityName: "Bangalore",
+		ns0#CountryName: "India"
+	}
+}]]></dw:set-payload>
+        </dw:transform-message>
+        <ws:consumer config-ref="navin_Web_Service_Consumer" operation="GetWeather" doc:name="Web Service Consumer"/>
+
+    </flow>
+
+</mule>
