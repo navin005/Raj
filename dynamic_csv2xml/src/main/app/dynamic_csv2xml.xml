@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:metadata="http://www.mulesoft.org/schema/mule/metadata" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:scripting="http://www.mulesoft.org/schema/mule/scripting" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd">
+    <http:listener-config name="HTTP_Listener_Configuration" host="0.0.0.0" port="8083" doc:name="HTTP Listener Configuration"/>
+    <flow name="dynamic_csv2xmlFlow">
+        <http:listener config-ref="HTTP_Listener_Configuration" path="/dcaa" allowedMethods="POST" doc:name="HTTP"/>
+        <set-session-variable variableName="data" value="#[payload]" doc:name="Session Variable"/>
+        <scripting:component doc:name="Groovy">
+            <scripting:script engine="Groovy"><![CDATA[def body = sessionVars.data;
+      String valueUTF8 = new String(body.getBytes(), "UTF-8");
+      def lines = valueUTF8.split("\n");
+       
+  
+      def body1 ="<root>";
+     
+      def record = "";
+    
+      def header = lines[0].split(",");
+      for(int i=1;i<lines.length;i++){
+            record += "<Record>";
+          def data = lines[i].split(",");
+          for(int j=0;j<data.length;j++){
+             record += "<"+header[j]+">" +data[j] +"</"+header[j]+">";
+           }
+        record += "</Record>";
+    }
+       
+           body1 += record +"</root>";
+   
+       result = body1]]></scripting:script>
+        </scripting:component>
+        <set-session-variable variableName="data1" value="#[payload]" doc:name="Session Variable"/>
+        <set-payload value="#[sessionVars.data1]" doc:name="Set Payload"/>
+
+    </flow>
+</mule>
